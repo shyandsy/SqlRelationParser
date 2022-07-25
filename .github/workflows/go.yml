@@ -7,7 +7,6 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
@@ -26,7 +25,8 @@ jobs:
         go test -v ./... -covermode=count -coverprofile=coverage.out
         go tool cover -func=coverage.out -o=coverage.out
 
-    - name: Go Coverage Badge  # Pass the `coverage.out` output to this action
-      uses: tj-actions/coverage-badge-go@v1.2
-      with:
-        filename: coverage.out
+    - name: Run coverage
+      run: go test -race -coverprofile=coverage.txt -covermode=atomic
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+
