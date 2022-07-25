@@ -17,7 +17,7 @@ func main() {
 		fmt.Println("failed to parse")
 		return
 	}
-	fmt.Println("\n===============================\n")
+	fmt.Println("\n===============================")
 	relations := result.GetRelations()
 	fmt.Println("parse the relations success")
 	for _, relation := range relations {

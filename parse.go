@@ -13,6 +13,7 @@ import (
 
 type RelationParser interface {
 	ParseRelation(sql string) (*model.Schema, error)
+	ParseRelationFromBatchSql(sqls []string) (*model.Schema, error)
 }
 
 type relationParser struct{}
@@ -35,13 +36,62 @@ func (r relationParser) ParseRelation(sql string) (*model.Schema, error) {
 	result.Show()
 
 	return mergeParserResult(result), nil
+}
 
+func (r relationParser) ParseRelationFromBatchSql(sqls []string) (*model.Schema, error) {
+	schemas := []*model.Schema{}
+
+	for _, sql := range sqls {
+		schema, err := r.ParseRelation(sql)
+		if err != nil {
+			return nil, err
+		}
+		schemas = append(schemas, schema)
+	}
+	schema := mergeSchemas(schemas)
+	fmt.Println(schema)
+	return schema, nil
 }
 
 func extractField(rootNode *ast.StmtNode) *model.ParserResult {
 	result := &model.ParserResult{}
 	(*rootNode).Accept(result)
 	return result
+}
+
+func mergeSchemas(items []*model.Schema) *model.Schema {
+	schema := model.Schema{}
+	for _, item := range items {
+		tables := item.GetTables()
+		relations := item.GetRelations()
+
+		// merge table
+		for _, table := range tables {
+			t := schema.GetTable(table.GetTableName())
+			if t == nil {
+				schema.AddTable(table)
+			} else {
+				for _, column := range t.GetColumns() {
+					t.AddColumn(column)
+				}
+			}
+		}
+
+		for _, relation := range relations {
+			rs := schema.GetRelations()
+			found := false
+			for _, r := range rs {
+				if relation.Equals(r) {
+					found = true
+					continue
+				}
+			}
+			if !found {
+				schema.AddRelation(relation)
+			}
+		}
+	}
+	return &schema
 }
 
 func mergeParserResult(result *model.ParserResult) *model.Schema {
