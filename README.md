@@ -1,6 +1,7 @@
 # SqlRelationParser
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Go](https://github.com/shyandsy/SqlRelationParser/actions/workflows/go.yml/badge.svg?event=push)](https://github.com/shyandsy/SqlRelationParser/actions/workflows/go.yml)
+[![codecov](https://codecov.io/gh/shyandsy/SqlRelationParser/branch/main/graph/badge.svg)](https://codecov.io/gh/shyandsy/SqlRelationParser)
 
 SqlRelationParser is a open source component to parse relations from sql statement  
 
